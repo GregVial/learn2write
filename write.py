@@ -2,4 +2,7 @@
 
 import streamlit as st
 
-st.balloons()
+language = st.sidebar.selectbox("Choose your language", ("Fançais", "English"))
+
+if language == "English":
+    st.balloons()
