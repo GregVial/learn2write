@@ -35,7 +35,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black flake8 mypy pytest hypothesis isort streamlit
+        pip install black flake8 mypy pytest hypothesis isort streamlit streamlit_drawable_canvas
     - name: Run black
       run:
         black --check . --exclude docs/
