@@ -43,8 +43,8 @@ jobs:
       run: flake8 write.py
 #     - name: Run pylint
 #      run: pylint write.py
-    - name: Run Mypy
-      run: mypy write.py
+#    - name: Run Mypy
+#      run: mypy write.py
     - name: Run isort
       run: isort --profile black write.py
     - name: tests
