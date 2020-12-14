@@ -1,5 +1,5 @@
+"""This script allows learning to write letters."""
+
 import streamlit as st
-import pandas as pd
-import numpy as np
 
 st.balloons()
