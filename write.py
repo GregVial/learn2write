@@ -29,13 +29,13 @@ def submit_img(img, lang="en", url=URL):
         return json.dumps(json.dumps({"word": None}))
     myobj = {"img": img, "word": "", "lang": lang, "nb_output": 1}
     req = requests.post(url, data=json.dumps(myobj))
+    st.write(req.text)
     return req.text
 
 
 def img2b64(img):
     """Converts a color image to black&white b64."""
     img = img[..., :3]
-    # img = rgb2gray(img)
     img = img.astype(np.uint8)
 
     pil_img = Image.fromarray(img)
@@ -44,11 +44,6 @@ def img2b64(img):
     pil_img.save(buff, format="PNG")
 
     return base64.b64encode(buff.getvalue()).decode("utf-8")
-
-
-# def rgb2gray(rgb):
-#    """RGB image to grayscale."""
-#    return np.dot(rgb[..., :3], [0.2989, 0.5870, 0.1140])
 
 
 def get_letter():
@@ -67,9 +62,8 @@ def get_letter():
 
 if __name__ == "__main__":
     # Session initialization
-    session = get(x=1, letter="", successes=0)
+    session = get(count=1, letter="", successes=0)
 
-    # Draw page
     # Create canva
     CanvasResult = st_canvas(
         fill_color="rgba(255, 165, 0, 0.3)",
@@ -90,13 +84,13 @@ if __name__ == "__main__":
     # Next letter button
     change = st.button("Next letter")
 
-    # Score
+    # Empty slot for score
     score = st.empty()
 
     # Logical flow
     # Get letter to be drawn
-    if session.x == 1:
-        session.x += 1
+    if session.count == 1:
+        session.count += 1
         session.letter = get_letter()
     elif change:
         session.letter = get_letter()
