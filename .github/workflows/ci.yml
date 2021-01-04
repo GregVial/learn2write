@@ -39,7 +39,7 @@ jobs:
     - name: Run black
       run:
         black --check . --exclude docs/
-     - name: Run pylint
+    - name: Run pylint
       run: pylint write.py
     - name: Run isort
       run: isort --profile black write.py
