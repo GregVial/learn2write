@@ -43,5 +43,3 @@ jobs:
       run: pylint write.py
     - name: Run isort
       run: isort --profile black write.py
-    - name: tests
-      run: pytest
