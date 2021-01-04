@@ -5,4 +5,4 @@ pylint==2.4.4
 torch==1.6.0
 torchvision==0.7.0
 streamlit==0.72.0
-stramlit-drawable-canvas==0.5.1
+streamlit-drawable-canvas==0.5.1
