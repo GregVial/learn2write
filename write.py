@@ -1,10 +1,13 @@
 """Simple streamlit app to learn writing digits."""
 
+
+import json
 import random
 
 import numpy as np
 import streamlit as st
 import torch
+from ftfy import fix_encoding as f_e
 from streamlit_drawable_canvas import st_canvas
 
 from mnist import Net
@@ -56,6 +59,25 @@ if __name__ == "__main__":
         mnist = Net()
         mnist.load_state_dict(torch.load("models/mnist_cnn.pt"))
 
+    # Read text file
+    with open("texts.json") as json_file:
+        texts = json.load(json_file)
+    languages = texts["languages"]
+
+    # language choice
+    language_list = [f_e(l) for l in languages.keys()]
+    language = st.sidebar.selectbox(" ", language_list)
+    text = texts[language[:2]]
+
+    # target choice
+    target = st.sidebar.selectbox(
+        f_e(text["what"]), (f_e(text["digits"]), f_e(text["letters"]))
+    )
+    if target == text["digits"]:
+        target = "digits"
+    else:
+        target = "letters"
+
     # Create canva
     CanvasResult = st_canvas(
         fill_color="rgba(255, 165, 0, 0.3)",
@@ -74,7 +96,7 @@ if __name__ == "__main__":
     res_text = st.empty()
 
     # Next input button
-    change = st.button("Next letter")
+    change = st.button(f_e(text["next"][target]))
 
     # Empty slot for score
     score = st.empty()
@@ -88,11 +110,14 @@ if __name__ == "__main__":
         session.expected = get_digit()
 
     # Display letter
-    res_text.text("Please draw a {}".format(session.expected))
+    res_text.text(f_e(text["target"].format(session.expected)))
 
     # Display score
-    if session.successes:
-        score.write("You correctly draw {} digits".format(session.successes))
+    if session.successes > 0:
+        if session.successes == 1:
+            score.write(f_e(text["score1"][target].format(session.successes)))
+        else:
+            score.write(f_e(text["score"][target].format(session.successes)))
 
     # Process drawing
     if CanvasResult.image_data is not None:
@@ -102,9 +127,12 @@ if __name__ == "__main__":
         if res is None:
             st.stop()
         else:
-            res_text.text("Found: {}, expected: {}".format(res, session.expected))
+            res_text.text(f_e(text["result"].format(res, session.expected)))
             if res == session.expected:
                 st.balloons()
                 session.expected = get_digit()
                 session.successes += 1
-                score.write("You correctly draw {} digits".format(session.successes))
+                if session.successes == 1:
+                    score.write(f_e(text["score1"][target].format(session.successes)))
+                else:
+                    score.write(f_e(text["score"][target].format(session.successes)))
