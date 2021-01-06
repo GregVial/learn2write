@@ -1,0 +1,46 @@
+{
+    "languages": {
+        "english": "en",
+        "français": "fr"
+    },
+    "en": {
+        "language": "Choose your language",
+        "what": "What do you want to learn ?",
+        "digits": "digits",
+        "letters": "letters",
+        "next": {
+            "digits": "Next digit",
+            "letters": "Next letter"
+        },
+        "target": "Please draw a {}",
+        "result": "Found: {}, expected: {}",
+        "score": {
+            "digits": "You correctly draw {} digits",
+            "letters": "You correctly draw {} letters"
+        },
+        "score1": {
+            "digits": "You correctly draw one digit",
+            "letters": "You correctly draw one letter"
+        }
+    },
+    "fr": {
+        "language": "Choisis ta langue",
+        "what": "Que veux-tu apprendre ?",
+        "digits": "chiffres",
+        "letters": "lettres",
+        "next": {
+            "digits": "Chiffre suivant",
+            "letters": "Lettre suivante"
+        },
+        "target": "Dessine un {}",
+        "result": "Trouvé: {}, attendu: {}",
+        "score": {
+            "digits": "Tu as correctement écrit {} chiffres",
+            "letters": "Tu as correctement écrit {} lettres"
+        },
+        "score1": {
+            "digits": "Tu as correctement écrit un chiffre",
+            "letters": "Tu as correctement écrit une lettre"
+        }
+    }
+}
