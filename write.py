@@ -83,8 +83,8 @@ if __name__ == "__main__":
     # Session initialization
     session = get(count=1, expected="", successes=0)
     with st.spinner("Loading neural network..."):
-        mnist = Net().to("cpu")
-        mnist.load_state_dict(torch.load("models/mnist_cnn.pt"))
+        mnist = Net()
+        mnist.load_state_dict(torch.load("models/mnist_cnn.pt", map_location="cpu"))
 
     # Read text file
     input_file = open("texts.json", "r")
