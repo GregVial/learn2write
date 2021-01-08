@@ -7,7 +7,7 @@ import random
 import numpy as np
 import streamlit as st
 import torch
-from ftfy import fix_encoding as f_e
+from ftfy import fix_file
 from streamlit_drawable_canvas import st_canvas
 
 from mnist import Net
@@ -35,8 +35,8 @@ def submit_img(img, net):
     """Preprocess image and call neural net for prediction."""
     grayscale_img = to_grayscale(img)
     small_img = resize(grayscale_img, CANVA_SIZE, NN_IMG_SIZE)
-    ref = np.full((NN_IMG_SIZE, NN_IMG_SIZE), 0.9999)
-    if np.allclose(small_img, ref):
+    empty_img = np.full((NN_IMG_SIZE, NN_IMG_SIZE), 0.9999)
+    if np.allclose(small_img, empty_img):
         return None
     normalized_img = (small_img - 0.5) / 0.5
     inverted_img = -normalized_img
@@ -52,27 +52,54 @@ def get_digit():
     return digit
 
 
+def fix_file_encoding(in_file, out_file):
+    """Fix unicode encoding to ensure proper display."""
+    stream = fix_file(
+        in_file,
+        encoding=None,
+        fix_entities=False,
+        remove_terminal_escapes=False,
+        fix_encoding=True,
+        fix_latin_ligatures=False,
+        fix_character_width=False,
+        uncurl_quotes=False,
+        fix_line_breaks=False,
+        fix_surrogates=False,
+        remove_control_chars=False,
+        remove_bom=False,
+        normalization="NFC",
+    )
+    stream_iterator = iter(stream)
+    while stream_iterator:
+        try:
+            line = next(stream_iterator)
+            out_file.write(line)
+        except StopIteration:
+            break
+    output_file.close()
+
+
 if __name__ == "__main__":
     # Session initialization
     session = get(count=1, expected="", successes=0)
     with st.spinner("Loading neural network..."):
-        mnist = Net()
+        mnist = Net().to("cpu")
         mnist.load_state_dict(torch.load("models/mnist_cnn.pt"))
 
     # Read text file
-    with open("texts.json") as json_file:
+    input_file = open("texts.json", "r")
+    output_file = open("texts_unicode.json", "w")
+    fix_file_encoding(input_file, output_file)
+    with open("texts_unicode.json") as json_file:
         texts = json.load(json_file)
     languages = texts["languages"]
 
     # language choice
-    language_list = [f_e(l) for l in languages.keys()]
-    language = st.sidebar.selectbox(" ", language_list)
-    text = texts[language[:2]]
+    language = st.sidebar.radio(" ", list(languages.keys()))
+    text = texts[languages[language]]
 
     # target choice
-    target = st.sidebar.selectbox(
-        f_e(text["what"]), (f_e(text["digits"]), f_e(text["letters"]))
-    )
+    target = st.sidebar.selectbox(text["what"], (text["digits"], text["letters"]))
     if target == text["digits"]:
         target = "digits"
     else:
@@ -96,7 +123,7 @@ if __name__ == "__main__":
     res_text = st.empty()
 
     # Next input button
-    change = st.button(f_e(text["next"][target]))
+    change = st.button(text["next"][target])
 
     # Empty slot for score
     score = st.empty()
@@ -110,14 +137,14 @@ if __name__ == "__main__":
         session.expected = get_digit()
 
     # Display letter
-    res_text.text(f_e(text["target"].format(session.expected)))
+    res_text.text(text["target"].format(session.expected))
 
     # Display score
     if session.successes > 0:
         if session.successes == 1:
-            score.write(f_e(text["score1"][target].format(session.successes)))
+            score.write(text["score1"][target].format(session.successes))
         else:
-            score.write(f_e(text["score"][target].format(session.successes)))
+            score.write(text["score"][target].format(session.successes))
 
     # Process drawing
     if CanvasResult.image_data is not None:
@@ -127,12 +154,12 @@ if __name__ == "__main__":
         if res is None:
             st.stop()
         else:
-            res_text.text(f_e(text["result"].format(res, session.expected)))
+            res_text.text(text["result"].format(res, session.expected))
             if res == session.expected:
                 st.balloons()
                 session.expected = get_digit()
                 session.successes += 1
                 if session.successes == 1:
-                    score.write(f_e(text["score1"][target].format(session.successes)))
+                    score.write(text["score1"][target].format(session.successes))
                 else:
-                    score.write(f_e(text["score"][target].format(session.successes)))
+                    score.write(text["score"][target].format(session.successes))
