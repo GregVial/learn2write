@@ -83,7 +83,7 @@ if __name__ == "__main__":
     # Session initialization
     session = get(count=1, expected="", successes=0)
     with st.spinner("Loading neural network..."):
-        mnist = Net()
+        mnist = Net().to("cpu")
         mnist.load_state_dict(torch.load("models/mnist_cnn.pt"))
 
     # Read text file
@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     # language choice
     language = st.sidebar.radio(" ", list(languages.keys()))
-    text = texts[language[:2]]
+    text = texts[languages[language]]
 
     # target choice
     target = st.sidebar.selectbox(text["what"], (text["digits"], text["letters"]))
